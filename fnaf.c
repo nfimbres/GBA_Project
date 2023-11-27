@@ -409,7 +409,7 @@ void afton_stop(struct Afton* afton) {
 /* start afton jumping, unless already fgalling */
 void afton_jump(struct Afton* afton) {
     if (!afton->falling) {
-        afton->yvel = -1350;
+        afton->yvel = -100;
         afton->falling = 1;
     }
 }
