@@ -10,7 +10,7 @@
 #include "background.h"
 
 /* include the sprite image we are using */
-#include "koopa.h"
+#include "afton.h"
 
 /* include the tile map we are using */
 #include "map.h"
