@@ -1,5 +1,5 @@
-
- * collide.c
+/*
+ * fnaf.c
  * program which demonstrates sprites colliding with tiles
  */
 
