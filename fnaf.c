@@ -9,8 +9,12 @@
 /* include the background image we are using */
 #include "background.h"
 
-/* include the sprite image we are using */
+/* include the sprite images we are using */
 #include "afton.h"
+#include "child1.h"
+#include "child2.h"
+#include "child3.h"
+#include "child4.h"
 
 /* include the tile map we are using */
 #include "map.h"
