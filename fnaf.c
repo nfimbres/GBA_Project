@@ -16,8 +16,8 @@
 #include "child3.h"
 #include "child4.h"
 
-/* include the music_20 */
-#include "music_20.h"
+/* include the ar_mono */
+#include "ar_mono.h"
 
 /* include the tile map we are using */
 #include "map.h"
@@ -280,13 +280,6 @@ void on_vblank() {
     *interrupt_enable = 0;
     unsigned short temp = *interrupt_state;
 
-    /* display frames of sound remaining */
-    char a_remaining[32], b_remaining[32];
-    sprintf(a_remaining, "A = %d    ", channel_a_vblanks_remaining);
-    sprintf(b_remaining, "B = %d    ", channel_b_vblanks_remaining);
-    set_text(a_remaining, 1, 0);
-    set_text(b_remaining, 2, 0);
-
     /* look for vertical refresh */
     if ((*interrupt_state & INTERRUPT_VBLANK) == INTERRUPT_VBLANK) {
 
@@ -295,7 +288,7 @@ void on_vblank() {
             /* restart the sound again when it runs out */
             channel_a_vblanks_remaining = channel_a_total_vblanks;
             *dma1_control = 0;
-            *dma1_source = (unsigned int) music_20;
+            *dma1_source = (unsigned int) ar_mono;
             *dma1_control = DMA_DEST_FIXED | DMA_REPEAT | DMA_32 |
                 DMA_SYNC_TO_TIMER | DMA_ENABLE;
         } else {
@@ -751,8 +744,8 @@ int main() {
     /* clear the sound control initially */
     *sound_control = 0;
     
-    /* set the music_20 to play on channel A */
-    play_sound(music_20, music_20_bytes, 16000, 'A');
+    /* set the ar_mono to play on channel A */
+    play_sound(ar_mono, ar_mono_bytes, 16000, 'A');
 
     /* setup the sprite image data */
     setup_sprite_image();
