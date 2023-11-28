@@ -16,6 +16,9 @@
 #include "child3.h"
 #include "child4.h"
 
+/* include the music_20 */
+#include "music_20.h"
+
 /* include the tile map we are using */
 #include "map.h"
 
@@ -27,7 +30,6 @@
 #define SPRITE_MAP_2D 0x0
 #define SPRITE_MAP_1D 0x40
 #define SPRITE_ENABLE 0x1000
-
 
 /* the control registers for the four tile layers */
 volatile unsigned short* bg0_control = (volatile unsigned short*) 0x4000008;
@@ -130,6 +132,214 @@ void memcpy16_dma(unsigned short* dest, unsigned short* source, int amount) {
     *dma_source = (unsigned int) source;
     *dma_destination = (unsigned int) dest;
     *dma_count = amount | DMA_16 | DMA_ENABLE;
+}
+
+/* MUSIC */
+
+/* define the timer control registers */
+volatile unsigned short* timer0_data = (volatile unsigned short*) 0x4000100;
+volatile unsigned short* timer0_control = (volatile unsigned short*) 0x4000102;
+
+/* make defines for the bit positions of the control register */
+#define TIMER_FREQ_1 0x0
+#define TIMER_FREQ_64 0x2
+#define TIMER_FREQ_256 0x3
+#define TIMER_FREQ_1024 0x4
+#define TIMER_ENABLE 0x80
+
+/* the GBA clock speed is fixed at this rate */
+#define CLOCK 16777216 
+#define CYCLES_PER_BLANK 280806
+
+/* turn DMA on for different sizes */
+#define DMA_ENABLE 0x80000000
+#define DMA_16 0x00000000
+#define DMA_32 0x04000000
+
+/* this causes the DMA destination to be the same each time rather than increment */
+#define DMA_DEST_FIXED 0x400000
+
+/* this causes the DMA to repeat the transfer automatically on some interval */
+#define DMA_REPEAT 0x2000000
+
+/* this causes the DMA repeat interval to be synced with timer 0 */
+#define DMA_SYNC_TO_TIMER 0x30000000
+
+/* pointers to the DMA source/dest locations and control registers */
+volatile unsigned int* dma1_source = (volatile unsigned int*) 0x40000BC;
+volatile unsigned int* dma1_destination = (volatile unsigned int*) 0x40000C0;
+volatile unsigned int* dma1_control = (volatile unsigned int*) 0x40000C4;
+
+volatile unsigned int* dma2_source = (volatile unsigned int*) 0x40000C8;
+volatile unsigned int* dma2_destination = (volatile unsigned int*) 0x40000CC;
+volatile unsigned int* dma2_control = (volatile unsigned int*) 0x40000D0;
+
+volatile unsigned int* dma3_source = (volatile unsigned int*) 0x40000D4;
+volatile unsigned int* dma3_destination = (volatile unsigned int*) 0x40000D8;
+volatile unsigned int* dma3_control = (volatile unsigned int*) 0x40000DC;
+
+/* the global interrupt enable register */
+volatile unsigned short* interrupt_enable = (unsigned short*) 0x4000208;
+
+/* this register stores the individual interrupts we want */
+volatile unsigned short* interrupt_selection = (unsigned short*) 0x4000200;
+
+/* this registers stores which interrupts if any occured */
+volatile unsigned short* interrupt_state = (unsigned short*) 0x4000202;
+
+/* the address of the function to call when an interrupt occurs */
+volatile unsigned int* interrupt_callback = (unsigned int*) 0x3007FFC;
+
+/* this register needs a bit set to tell the hardware to send the vblank interrupt */
+volatile unsigned short* display_interrupts = (unsigned short*) 0x4000004;
+
+/* the interrupts are identified by number, we only care about this one */
+#define INTERRUPT_VBLANK 0x1
+
+/* allows turning on and off sound for the GBA altogether */
+volatile unsigned short* master_sound = (volatile unsigned short*) 0x4000084;
+#define SOUND_MASTER_ENABLE 0x80
+
+/* has various bits for controlling the direct sound channels */
+volatile unsigned short* sound_control = (volatile unsigned short*) 0x4000082;
+
+/* bit patterns for the sound control register */
+#define SOUND_A_RIGHT_CHANNEL 0x100
+#define SOUND_A_LEFT_CHANNEL 0x200
+#define SOUND_A_FIFO_RESET 0x800
+#define SOUND_B_RIGHT_CHANNEL 0x1000
+#define SOUND_B_LEFT_CHANNEL 0x2000
+#define SOUND_B_FIFO_RESET 0x8000
+
+/* the location of where sound samples are placed for each channel */
+volatile unsigned char* fifo_buffer_a  = (volatile unsigned char*) 0x40000A0;
+volatile unsigned char* fifo_buffer_b  = (volatile unsigned char*) 0x40000A4;
+
+/* global variables to keep track of how much longer the sounds are to play */
+unsigned int channel_a_vblanks_remaining = 0;
+unsigned int channel_a_total_vblanks = 0;
+unsigned int channel_b_vblanks_remaining = 0;
+
+/* play a sound with a number of samples, and sample rate on one channel 'A' or 'B' */
+void play_sound(const signed char* sound, int total_samples, int sample_rate, char channel) {
+    /* start by disabling the timer and dma controller (to reset a previous sound) */
+    *timer0_control = 0;
+    if (channel == 'A') {
+        *dma1_control = 0;
+    } else if (channel == 'B') {
+        *dma2_control = 0; 
+    }
+
+    /* output to both sides and reset the FIFO */
+    if (channel == 'A') {
+        *sound_control |= SOUND_A_RIGHT_CHANNEL | SOUND_A_LEFT_CHANNEL | SOUND_A_FIFO_RESET;
+    } else if (channel == 'B') {
+        *sound_control |= SOUND_B_RIGHT_CHANNEL | SOUND_B_LEFT_CHANNEL | SOUND_B_FIFO_RESET;
+    }
+
+    /* enable all sound */
+    *master_sound = SOUND_MASTER_ENABLE;
+
+    /* set the dma channel to transfer from the sound array to the sound buffer */
+    if (channel == 'A') {
+        *dma1_source = (unsigned int) sound;
+        *dma1_destination = (unsigned int) fifo_buffer_a;
+        *dma1_control = DMA_DEST_FIXED | DMA_REPEAT | DMA_32 | DMA_SYNC_TO_TIMER | DMA_ENABLE;
+    } else if (channel == 'B') {
+        *dma2_source = (unsigned int) sound;
+        *dma2_destination = (unsigned int) fifo_buffer_b;
+        *dma2_control = DMA_DEST_FIXED | DMA_REPEAT | DMA_32 | DMA_SYNC_TO_TIMER | DMA_ENABLE;
+    }
+
+    /* set the timer so that it increments once each time a sample is due
+     * we divide the clock (ticks/second) by the sample rate (samples/second)
+     * to get the number of ticks/samples */
+    unsigned short ticks_per_sample = CLOCK / sample_rate;
+
+    /* the timers all count up to 65536 and overflow at that point, so we count up to that
+     * now the timer will trigger each time we need a sample, and cause DMA to give it one! */
+    *timer0_data = 65536 - ticks_per_sample;
+
+    /* determine length of playback in vblanks
+     * this is the total number of samples, times the number of clock ticks per sample,
+     * divided by the number of machine cycles per vblank (a constant) */
+    if (channel == 'A') {
+        channel_a_vblanks_remaining = total_samples * ticks_per_sample * (1.0 / CYCLES_PER_BLANK);
+        channel_a_total_vblanks = channel_a_vblanks_remaining;
+    } else if (channel == 'B') {
+        channel_b_vblanks_remaining = total_samples * ticks_per_sample * (1.0 / CYCLES_PER_BLANK);
+    }
+
+    /* enable the timer */
+    *timer0_control = TIMER_ENABLE | TIMER_FREQ_1;
+}
+
+/* this function is called each vblank to get the timing of sounds right */
+void on_vblank() {
+    /* disable interrupts for now and save current state of interrupt */
+    *interrupt_enable = 0;
+    unsigned short temp = *interrupt_state;
+
+    /* display frames of sound remaining */
+    char a_remaining[32], b_remaining[32];
+    sprintf(a_remaining, "A = %d    ", channel_a_vblanks_remaining);
+    sprintf(b_remaining, "B = %d    ", channel_b_vblanks_remaining);
+    set_text(a_remaining, 1, 0);
+    set_text(b_remaining, 2, 0);
+
+    /* look for vertical refresh */
+    if ((*interrupt_state & INTERRUPT_VBLANK) == INTERRUPT_VBLANK) {
+
+        /* update channel A */
+        if (channel_a_vblanks_remaining == 0) {
+            /* restart the sound again when it runs out */
+            channel_a_vblanks_remaining = channel_a_total_vblanks;
+            *dma1_control = 0;
+            *dma1_source = (unsigned int) music_20;
+            *dma1_control = DMA_DEST_FIXED | DMA_REPEAT | DMA_32 |
+                DMA_SYNC_TO_TIMER | DMA_ENABLE;
+        } else {
+            channel_a_vblanks_remaining--;
+        }
+
+        /* update channel B */
+        if (channel_b_vblanks_remaining == 0) {
+            /* disable the sound and DMA transfer on channel B */
+            *sound_control &= ~(SOUND_B_RIGHT_CHANNEL | SOUND_B_LEFT_CHANNEL | SOUND_B_FIFO_RESET);
+            *dma2_control = 0;
+        }
+        else {
+            channel_b_vblanks_remaining--;
+        }
+    }
+
+    /* restore/enable interrupts */
+    *interrupt_state = temp;
+    *interrupt_enable = 1;
+}
+
+
+
+/* function to set text on the screen at a given location */
+void set_text(char* str, int row, int col) {
+    /* find the index in the texmap to draw to */
+    int index = row * 32 + col;
+
+    /* the first 32 characters are missing from the map (controls etc.) */
+    int missing = 32;
+
+    /* pointer to text map */
+    volatile unsigned short* ptr = screen_block(24);
+
+    /* for each character */
+    while (*str) {
+        /* place this character in the map */
+        ptr[index] = *str - missing;
+
+        /* move onto the next character */
+        index++;
+        str++;
+    }
 }
 
 /* function to setup background 0 for this program */
@@ -529,6 +739,20 @@ int main() {
 
     /* setup the background 0 */
     setup_background();
+    
+    /* create custom interrupt handler for vblank - whole point is to turn off sound at right time
+     * we disable interrupts while changing them, to avoid breaking things */
+    *interrupt_enable = 0;
+    *interrupt_callback = (unsigned int) &on_vblank;
+    *interrupt_selection |= INTERRUPT_VBLANK;
+    *display_interrupts |= 0x08;
+    *interrupt_enable = 1;
+
+    /* clear the sound control initially */
+    *sound_control = 0;
+    
+    /* set the music_20 to play on channel A */
+    play_sound(music_20, music_20_bytes, 16000, 'A');
 
     /* setup the sprite image data */
     setup_sprite_image();
@@ -545,6 +769,7 @@ int main() {
 
     /* loop forever */
     while (1) {
+        
         /* update afton */
         afton_update(&afton, xscroll);
 
