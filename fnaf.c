@@ -16,8 +16,8 @@
 #include "child3.h"
 #include "child4.h"
 
-/* include the music_64Hz */
-#include "music_64Hz.h"
+/* include the music */
+#include "music.h"
 
 /* include the tile map we are using */
 #include "map.h"
@@ -288,7 +288,7 @@ void on_vblank() {
             /* restart the sound again when it runs out */
             channel_a_vblanks_remaining = channel_a_total_vblanks;
             *dma1_control = 0;
-            *dma1_source = (unsigned int) music_64Hz;
+            *dma1_source = (unsigned int) music;
             *dma1_control = DMA_DEST_FIXED | DMA_REPEAT | DMA_32 |
                 DMA_SYNC_TO_TIMER | DMA_ENABLE;
         } else {
@@ -744,8 +744,8 @@ int main() {
     /* clear the sound control initially */
     *sound_control = 0;
     
-    /* set the music_64Hz to play on channel A */
-    play_sound(music_64Hz, music_64Hz_bytes, 16000, 'A');
+    /* set the music to play on channel A */
+    play_sound(music, music_bytes, 16000, 'A');
 
     /* setup the sprite image data */
     setup_sprite_image();
