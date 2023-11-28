@@ -391,6 +391,8 @@ enum SpriteSize {
     SIZE_32_64
 };
 
+                                                            /* SPRITE */
+
 /* function to initialize a sprite with its properties, and return a pointer */
 struct Sprite* sprite_init(int x, int y, enum SpriteSize size,
         int horizontal_flip, int vertical_flip, int tile_index, int priority) {
@@ -442,11 +444,15 @@ struct Sprite* sprite_init(int x, int y, enum SpriteSize size,
     return &sprites[index];
 }
 
+                                                            /* ALL SPRITES */
+
 /* update all of the spries on the screen */
 void sprite_update_all() {
     /* copy them all over */
     memcpy16_dma((unsigned short*) sprite_attribute_memory, (unsigned short*) sprites, NUM_SPRITES * 4);
 }
+
+                                                            /* ALL SPRITES */
 
 /* setup all sprites */
 void sprite_clear() {
@@ -459,6 +465,8 @@ void sprite_clear() {
         sprites[i].attribute1 = SCREEN_WIDTH;
     }
 }
+
+                                                            /* ALL SPRITES */
 
 /* set a sprite postion */
 void sprite_position(struct Sprite* sprite, int x, int y) {
@@ -475,6 +483,8 @@ void sprite_position(struct Sprite* sprite, int x, int y) {
     sprite->attribute1 |= (x & 0x1ff);
 }
 
+                                                            /* ALL SPRITES */
+
 /* move a sprite in a direction */
 void sprite_move(struct Sprite* sprite, int dx, int dy) {
     /* get the current y coordinate */
@@ -487,6 +497,8 @@ void sprite_move(struct Sprite* sprite, int dx, int dy) {
     sprite_position(sprite, x + dx, y + dy);
 }
 
+                                                            /* ALL SPRITES */
+
 /* change the vertical flip flag */
 void sprite_set_vertical_flip(struct Sprite* sprite, int vertical_flip) {
     if (vertical_flip) {
@@ -497,6 +509,8 @@ void sprite_set_vertical_flip(struct Sprite* sprite, int vertical_flip) {
         sprite->attribute1 &= 0xdfff;
     }
 }
+
+                                                            /* ALL SPRITES */
 
 /* change the vertical flip flag */
 void sprite_set_horizontal_flip(struct Sprite* sprite, int horizontal_flip) {
@@ -509,6 +523,8 @@ void sprite_set_horizontal_flip(struct Sprite* sprite, int horizontal_flip) {
     }
 }
 
+                                                            /* ALL SPRITES */
+
 /* change the tile offset of a sprite */
 void sprite_set_offset(struct Sprite* sprite, int offset) {
     /* clear the old offset */
@@ -518,6 +534,8 @@ void sprite_set_offset(struct Sprite* sprite, int offset) {
     sprite->attribute2 |= (offset & 0x03ff);
 }
 
+                                                            /* ALL SPRITES */
+
 /* setup the sprite image and palette */
 void setup_sprite_image() {
     /* load the palette from the image into palette memory*/
@@ -526,6 +544,8 @@ void setup_sprite_image() {
     /* load the image into sprite image memory */
     memcpy16_dma((unsigned short*) sprite_image_memory, (unsigned short*) afton_data, (afton_width * afton_height) / 2);
 }
+
+                                                            /* AFTON SPRITE */
 
 /* a struct for afton's logic and behavior */
 struct Afton {
@@ -560,6 +580,8 @@ struct Afton {
     int falling;
 };
 
+                                                            /* AFTON SPRITE */
+
 /* initialize afton */
 void afton_init(struct Afton* afton) {
     afton->x = 100;
@@ -574,6 +596,8 @@ void afton_init(struct Afton* afton) {
     afton->animation_delay = 8;
     afton->sprite = sprite_init(afton->x, afton->y, SIZE_16_32, 0, 0, afton->frame, 0);
 }
+
+                                                            /* AFTON SPRITE */
 
 /* move afton left or right returns if it is at edge of the screen */
 int afton_left(struct Afton* afton) {
@@ -590,6 +614,9 @@ int afton_left(struct Afton* afton) {
         return 0;
     }
 }
+
+                                                            /* AFTON SPRITE */
+
 int afton_right(struct Afton* afton) {
     /* face right */
     sprite_set_horizontal_flip(afton->sprite, 0);
@@ -605,6 +632,8 @@ int afton_right(struct Afton* afton) {
     }
 }
 
+                                                            /* AFTON SPRITE */
+
 /* stop afton from walking left/right */
 void afton_stop(struct Afton* afton) {
     afton->move = 0;
@@ -613,6 +642,8 @@ void afton_stop(struct Afton* afton) {
     sprite_set_offset(afton->sprite, afton->frame);
 }
 
+                                                            /* AFTON SPRITE */
+
 /* start afton jumping, unless already fgalling */
 void afton_jump(struct Afton* afton) {
     if (!afton->falling) {
@@ -620,6 +651,8 @@ void afton_jump(struct Afton* afton) {
         afton->falling = 1;
     }
 }
+
+                                                            /* GENERAL USE */
 
 /* finds which tile a screen coordinate maps to, taking scroll into acco  unt */
 unsigned short tile_lookup(int x, int y, int xscroll, int yscroll,
@@ -676,6 +709,8 @@ unsigned short tile_lookup(int x, int y, int xscroll, int yscroll,
     /* return the tile */
     return tilemap[index + offset];
 }
+
+                                                            /* AFTON SPRITE */
 
 /* update afton */
 void afton_update(struct Afton* afton, int xscroll) {
