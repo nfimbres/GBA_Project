@@ -583,132 +583,6 @@ struct Afton {
 
                                                             /* AFTON SPRITE */
 
-/* a struct for a guest's logic and behavior */
-struct Guest {
-    /* the actual sprite attribute info */
-    struct Sprite* sprite;
-
-    /* the x and y postion in pixels */
-    int x, y;
-
-    /* guest's y velocity in 1/256 pixels/second */
-    int yvel;
-
-    /* guest's y acceleration in 1/256 pixels/second^2 */
-    int gravity; 
-
-    /* which frame of the animation he is on */
-    int frame;
-
-    /* the number of frames to wait before flipping */
-    int animation_delay;
-
-    /* the animation counter counts how many frames until we flip */
-    int counter;
-
-    /* whether guest is an animatronic */
-    bool ani;
-
-    /* the number of pixels away from the edge of the screen guest stays */
-    int border;
-
-    /* if guest is currently falling */
-    int falling;
-};
-
-/* initialize afton */
-void afton_init(struct Afton* afton) {
-    afton->x = 100;
-    afton->y = 113;
-    afton->yvel = 0;
-    afton->gravity = 50;
-    afton->border = 40;
-    afton->frame = 0;
-    afton->move = 0;
-    afton->counter = 0;
-    afton->falling = 0;
-    afton->animation_delay = 8;
-    afton->sprite = sprite_init(afton->x, afton->y, SIZE_16_32, 0, 0, afton->frame, 0);
-}
-
-/* initialize guest */
-void guest_init(struct Guest* guest, int x, int y) {
-    guest->x = x;
-    guest->y = y;
-    guest->yvel = 0;
-    guest->gravity = 50;
-    guest->border = 40;
-    guest->frame = 0;
-    guest->ani = false;
-    guest->counter = 0;
-    guest->falling = 0;
-    guest->animation_delay = 8;
-    guest->sprite = sprite_init(guest->x, guest->y, SIZE_16_32, 0, 0, guest->frame, 0);
-}
-
-/* update guest */
-void guest_update(struct Guest* guest, int xscroll) {
-
-    /* check which tile guest's feet are over */
-    unsigned short tile = tile_lookup(guest->x + 8, guest->y + 32, xscroll, 0, map,
-            map_width, map_height);
-
-    /* if it's block tile
-     * these numbers refer to the tile indices of the blocks guest can walk on */
-    if (tile < 2) {
-        /* stop the fall! */
-        guest->falling = 0;
-        guest->yvel = 0;
-
-        /* make him line up with the top of a block works by clearing out the lower bits to 0 */
-        guest->y &= ~0x3;
-
-        /* move him down one because there is a one pixel gap in the image */
-        guest->y++;
-
-    } else {
-        /* he is falling now */
-        guest->falling = 1;
-    }
-
-
-    /* update animation guest has become an animatronic */
-    if (guest->ani) {
-        guest->counter++;
-        if (guest->counter >= guest->animation_delay) {
-            guest->frame = guest->frame + 16;
-            if (guest->frame > 16) {
-                guest->frame = 0;
-            }
-            sprite_set_offset(guest->sprite, guest->frame);
-            guest->counter = 0;
-        }
-    }
-
-    /* set on screen position */
-    sprite_position(guest->sprite, guest->x, guest->y);
-}
-
-                                                            /* AFTON SPRITE */
-
-/* move afton left or right returns if it is at edge of the screen */
-int afton_left(struct Afton* afton) {
-    /* face left */
-    sprite_set_horizontal_flip(afton->sprite, 1);
-    afton->move = 1;
-
-    /* if we are at the left end, just scroll the screen */
-    if (afton->x < afton->border) {
-        return 1;
-    } else {
-        /* else move left */
-        afton->x--;
-        return 0;
-    }
-}
-
-                                                            /* AFTON SPRITE */
-
 int afton_right(struct Afton* afton) {
     /* face right */
     sprite_set_horizontal_flip(afton->sprite, 0);
@@ -852,6 +726,130 @@ void afton_update(struct Afton* afton, int xscroll) {
     sprite_position(afton->sprite, afton->x, afton->y);
 }
 
+/* a struct for a guest's logic and behavior */
+struct Guest {
+    /* the actual sprite attribute info */
+    struct Sprite* sprite;
+
+    /* the x and y postion in pixels */
+    int x, y;
+
+    /* guest's y velocity in 1/256 pixels/second */
+    int yvel;
+
+    /* guest's y acceleration in 1/256 pixels/second^2 */
+    int gravity; 
+
+    /* which frame of the animation he is on */
+    int frame;
+
+    /* the number of frames to wait before flipping */
+    int animation_delay;
+
+    /* the animation counter counts how many frames until we flip */
+    int counter;
+
+    /* whether guest is an animatronic */
+    bool ani;
+
+    /* the number of pixels away from the edge of the screen guest stays */
+    int border;
+
+    /* if guest is currently falling */
+    int falling;
+};
+
+/* initialize afton */
+void afton_init(struct Afton* afton) {
+    afton->x = 100;
+    afton->y = 113;
+    afton->yvel = 0;
+    afton->gravity = 50;
+    afton->border = 40;
+    afton->frame = 0;
+    afton->move = 0;
+    afton->counter = 0;
+    afton->falling = 0;
+    afton->animation_delay = 8;
+    afton->sprite = sprite_init(afton->x, afton->y, SIZE_16_32, 0, 0, afton->frame, 0);
+}
+
+/* initialize guest */
+void guest_init(struct Guest* guest, int x, int y) {
+    guest->x = x;
+    guest->y = y;
+    guest->yvel = 0;
+    guest->gravity = 50;
+    guest->border = 40;
+    guest->frame = 0;
+    guest->ani = false;
+    guest->counter = 0;
+    guest->falling = 0;
+    guest->animation_delay = 8;
+    guest->sprite = sprite_init(guest->x, guest->y, SIZE_16_32, 0, 0, guest->frame, 0);
+}
+
+/* update guest */
+void guest_update(struct Guest* guest, int xscroll) {
+
+    /* check which tile guest's feet are over */
+    unsigned short tile = tile_lookup(guest->x + 8, guest->y + 32, xscroll, 0, map,
+            map_width, map_height);
+
+    /* if it's block tile
+     * these numbers refer to the tile indices of the blocks guest can walk on */
+    if (tile < 2) {
+        /* stop the fall! */
+        guest->falling = 0;
+        guest->yvel = 0;
+
+        /* make him line up with the top of a block works by clearing out the lower bits to 0 */
+        guest->y &= ~0x3;
+
+        /* move him down one because there is a one pixel gap in the image */
+        guest->y++;
+
+    } else {
+        /* he is falling now */
+        guest->falling = 1;
+    }
+
+
+    /* update animation guest has become an animatronic */
+    if (guest->ani) {
+        guest->counter++;
+        if (guest->counter >= guest->animation_delay) {
+            guest->frame = guest->frame + 16;
+            if (guest->frame > 16) {
+                guest->frame = 0;
+            }
+            sprite_set_offset(guest->sprite, guest->frame);
+            guest->counter = 0;
+        }
+    }
+
+    /* set on screen position */
+    sprite_position(guest->sprite, guest->x, guest->y);
+}
+
+                                                            /* AFTON SPRITE */
+
+/* move afton left or right returns if it is at edge of the screen */
+int afton_left(struct Afton* afton) {
+    /* face left */
+    sprite_set_horizontal_flip(afton->sprite, 1);
+    afton->move = 1;
+
+    /* if we are at the left end, just scroll the screen */
+    if (afton->x < afton->border) {
+        return 1;
+    } else {
+        /* else move left */
+        afton->x--;
+        return 0;
+    }
+}
+
 /* the main function */
 int main() {
     /* we set the mode to mode 0 with bg0 on */
@@ -894,8 +892,10 @@ int main() {
     /* loop forever */
     while (1) {
         
-        /* update afton */
+        /* update sprites */
         afton_update(&afton, xscroll);
+
+        guest_update(&orville, xscroll);
 
         /* now the arrow keys move afton */
         if (button_pressed(BUTTON_RIGHT)) {
