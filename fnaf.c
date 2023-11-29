@@ -602,8 +602,8 @@ struct guest {
     /* the animation counter counts how many frames until we flip */
     int counter;
 
-    /* whether guest is alive */
-    bool alive;
+    /* whether guest is an animitronic */
+    bool ani;
 
     /* the number of pixels away from the edge of the screen guest stays */
     int border;
@@ -635,7 +635,7 @@ void guest_init(struct guest* guest, int x, int y) {
     guest->gravity = 50;
     guest->border = 40;
     guest->frame = 0;
-    guest->move = 0;
+    guest->ani = false;
     guest->counter = 0;
     guest->falling = 0;
     guest->animation_delay = 8;
@@ -668,8 +668,8 @@ void guest_update(struct guest* guest, int xscroll) {
     }
 
 
-    /* update animation if moving */
-    if (guest->alive) {
+    /* update animation guest has become an animitronic */
+    if (guest->ani) {
         guest->counter++;
         if (guest->counter >= guest->animation_delay) {
             guest->frame = guest->frame + 16;
