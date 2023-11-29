@@ -544,6 +544,7 @@ void setup_sprite_image() {
 
     /* load the image into sprite image memory */
     memcpy16_dma((unsigned short*) sprite_image_memory, (unsigned short*) afton_data, (afton_width * afton_height) / 2);
+    memcpy16_dma((unsigned short*) sprite_image_memory, (unsigned short*) orville_data, (orville_width * orville_height) / 2);
 }
 
                                                             /* AFTON SPRITE */
