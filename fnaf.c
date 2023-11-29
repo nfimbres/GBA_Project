@@ -780,7 +780,7 @@ int main() {
     *sound_control = 0;
     
     /* set the music to play on channel A */
-    play_sound(music, music_bytes, 16000, 'A');
+    play_sound(music, music_bytes, 4900, 'A');
 
     /* setup the sprite image data */
     setup_sprite_image();
