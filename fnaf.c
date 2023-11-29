@@ -11,10 +11,7 @@
 
 /* include the sprite images we are using */
 #include "afton.h"
-#include "child1.h"
-#include "child2.h"
-#include "child3.h"
-#include "child4.h"
+#include "orville.h"
 
 /* include the music */
 #include "music.h"
@@ -582,6 +579,39 @@ struct Afton {
 
                                                             /* AFTON SPRITE */
 
+/* a struct for a guest's logic and behavior */
+struct guest {
+    /* the actual sprite attribute info */
+    struct Sprite* sprite;
+
+    /* the x and y postion in pixels */
+    int x, y;
+
+    /* guest's y velocity in 1/256 pixels/second */
+    int yvel;
+
+    /* guest's y acceleration in 1/256 pixels/second^2 */
+    int gravity; 
+
+    /* which frame of the animation he is on */
+    int frame;
+
+    /* the number of frames to wait before flipping */
+    int animation_delay;
+
+    /* the animation counter counts how many frames until we flip */
+    int counter;
+
+    /* whether guest is alive */
+    bool alive;
+
+    /* the number of pixels away from the edge of the screen guest stays */
+    int border;
+
+    /* if guest is currently falling */
+    int falling;
+};
+
 /* initialize afton */
 void afton_init(struct Afton* afton) {
     afton->x = 100;
@@ -590,11 +620,69 @@ void afton_init(struct Afton* afton) {
     afton->gravity = 50;
     afton->border = 40;
     afton->frame = 0;
-    afton->move = 0;
+    afton->alive = False;
     afton->counter = 0;
     afton->falling = 0;
     afton->animation_delay = 8;
     afton->sprite = sprite_init(afton->x, afton->y, SIZE_16_32, 0, 0, afton->frame, 0);
+}
+
+/* initialize guest */
+void guest_init(struct guest* guest, int x, int y) {
+    guest->x = x;
+    guest->y = y;
+    guest->yvel = 0;
+    guest->gravity = 50;
+    guest->border = 40;
+    guest->frame = 0;
+    guest->move = 0;
+    guest->counter = 0;
+    guest->falling = 0;
+    guest->animation_delay = 8;
+    guest->sprite = sprite_init(guest->x, guest->y, SIZE_16_32, 0, 0, guest->frame, 0);
+}
+
+/* update guest */
+void guest_update(struct guest* guest, int xscroll) {
+
+    /* check which tile guest's feet are over */
+    unsigned short tile = tile_lookup(guest->x + 8, guest->y + 32, xscroll, 0, map,
+            map_width, map_height);
+
+    /* if it's block tile
+     * these numbers refer to the tile indices of the blocks guest can walk on */
+    if (tile < 2) {
+        /* stop the fall! */
+        guest->falling = 0;
+        guest->yvel = 0;
+
+        /* make him line up with the top of a block works by clearing out the lower bits to 0 */
+        guest->y &= ~0x3;
+
+        /* move him down one because there is a one pixel gap in the image */
+        guest->y++;
+
+    } else {
+        /* he is falling now */
+        guest->falling = 1;
+    }
+
+
+    /* update animation if moving */
+    if (guest->alive) {
+        guest->counter++;
+        if (guest->counter >= guest->animation_delay) {
+            guest->frame = guest->frame + 16;
+            if (guest->frame > 16) {
+                guest->frame = 0;
+            }
+            sprite_set_offset(guest->sprite, guest->frame);
+            guest->counter = 0;
+        }
+    }
+
+    /* set on screen position */
+    sprite_position(guest->sprite, guest->x, guest->y);
 }
 
                                                             /* AFTON SPRITE */
