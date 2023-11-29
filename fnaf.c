@@ -447,7 +447,7 @@ struct Sprite* sprite_init(int x, int y, enum SpriteSize size,
 
                                                             /* ALL SPRITES */
 
-/* update all of the spries on the screen */
+/* update all of the sprites on the screen */
 void sprite_update_all() {
     /* copy them all over */
     memcpy16_dma((unsigned short*) sprite_attribute_memory, (unsigned short*) sprites, NUM_SPRITES * 4);
@@ -544,7 +544,7 @@ void setup_sprite_image() {
 
     /* load the image into sprite image memory */
     memcpy16_dma((unsigned short*) sprite_image_memory, (unsigned short*) afton_data, (afton_width * afton_height) / 2);
-    memcpy16_dma((unsigned short*) sprite_image_memory, (unsigned short*) orville_data, (orville_width * orville_height) / 2);
+    // memcpy16_dma((unsigned short*) sprite_image_memory, (unsigned short*) orville_data, (orville_width * orville_height) / 2);
 }
 
                                                             /* AFTON SPRITE */
