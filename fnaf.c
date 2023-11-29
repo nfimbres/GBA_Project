@@ -3,6 +3,10 @@
  * program which demonstrates sprites colliding with tiles
  */
 
+#include <stdio.h>
+#include <stdbool.h>
+
+
 #define SCREEN_WIDTH 240
 #define SCREEN_HEIGHT 160
 
@@ -580,7 +584,7 @@ struct Afton {
                                                             /* AFTON SPRITE */
 
 /* a struct for a guest's logic and behavior */
-struct guest {
+struct Guest {
     /* the actual sprite attribute info */
     struct Sprite* sprite;
 
@@ -602,7 +606,7 @@ struct guest {
     /* the animation counter counts how many frames until we flip */
     int counter;
 
-    /* whether guest is an animitronic */
+    /* whether guest is an animatronic */
     bool ani;
 
     /* the number of pixels away from the edge of the screen guest stays */
@@ -620,7 +624,7 @@ void afton_init(struct Afton* afton) {
     afton->gravity = 50;
     afton->border = 40;
     afton->frame = 0;
-    afton->alive = False;
+    afton->move = 0;
     afton->counter = 0;
     afton->falling = 0;
     afton->animation_delay = 8;
@@ -628,7 +632,7 @@ void afton_init(struct Afton* afton) {
 }
 
 /* initialize guest */
-void guest_init(struct guest* guest, int x, int y) {
+void guest_init(struct Guest* guest, int x, int y) {
     guest->x = x;
     guest->y = y;
     guest->yvel = 0;
@@ -643,7 +647,7 @@ void guest_init(struct guest* guest, int x, int y) {
 }
 
 /* update guest */
-void guest_update(struct guest* guest, int xscroll) {
+void guest_update(struct Guest* guest, int xscroll) {
 
     /* check which tile guest's feet are over */
     unsigned short tile = tile_lookup(guest->x + 8, guest->y + 32, xscroll, 0, map,
@@ -668,7 +672,7 @@ void guest_update(struct guest* guest, int xscroll) {
     }
 
 
-    /* update animation guest has become an animitronic */
+    /* update animation guest has become an animatronic */
     if (guest->ani) {
         guest->counter++;
         if (guest->counter >= guest->animation_delay) {
@@ -879,6 +883,10 @@ int main() {
     /* create afton */
     struct Afton afton;
     afton_init(&afton);
+
+    /* create the orville guest */
+    struct Guest orville;
+    guest_init(&orville, 200, 113);
 
     /* set initial scroll to 0 */
     int xscroll = 0;
