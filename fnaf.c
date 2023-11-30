@@ -889,7 +889,7 @@ struct Guest
     int counter;
 
     /* whether guest is an animatronic */
-    bool ani;
+    int ani;
 
     /* the number of pixels away from the edge of the screen guest stays */
     int border;
@@ -923,7 +923,7 @@ void guest_init(struct Guest *guest, int x, int y, int f)
     guest->gravity = 50;
     guest->border = 40;
     guest->frame = f;
-    guest->ani = false;
+    guest->ani = 1;
     guest->counter = 0;
     guest->falling = 0;
     guest->animation_delay = 8;
@@ -960,11 +960,16 @@ void guest_update(struct Guest *guest, int xscroll, int f, struct Afton *afton)
         guest->falling = 1;
     }
     
-    if((afton->x + 8 >= guest->x) && (afton->x <= guest->x + 8)) {
-        guest->ani = true;
-        guest->frame += 16;
-        delay(500);
+    if((afton->x + 8 >= guest->x) && (afton->x <= guest->x)) {
+        guest->ani = 0;
     }
+    if((afton->x + 8 >= guest->x + 8) && (afton->x <= guest->x + 8)) {
+        guest->ani = 0;
+    }
+    if(guest->ani) {
+        guest->frame += 16;
+    }
+
 
     /* set on screen position */
     sprite_position(guest->sprite, guest->x, guest->y);
