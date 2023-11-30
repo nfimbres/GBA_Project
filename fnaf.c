@@ -795,7 +795,7 @@ void guest_init(struct Guest* guest, int x, int y) {
     guest->yvel = 0;
     guest->gravity = 50;
     guest->border = 40;
-    guest->frame = 0;
+    guest->frame = 2;
     guest->ani = false;
     guest->counter = 0;
     guest->falling = 0;
