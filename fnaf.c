@@ -63,6 +63,8 @@ volatile unsigned short* buttons = (volatile unsigned short*) 0x04000130;
 /* scrolling registers for backgrounds */
 volatile short* bg0_x_scroll = (unsigned short*) 0x4000010;
 volatile short* bg0_y_scroll = (unsigned short*) 0x4000012;
+volatile short* bg1_x_scroll = (unsigned short*) 0x4000014;
+volatile short* bg1_y_scroll = (unsigned short*) 0x4000016;
 
 /* the bit positions indicate each button - the first bit is for A, second for
  * B, and so on, each constant below can be ANDED into the register to get the
