@@ -958,12 +958,6 @@ void guest_update(struct Guest *guest, int xscroll, int f)
         guest->falling = 1;
     }
 
-    /* update animation guest has become an animatronic */
-    if (guest->ani)
-    {
-        guest->frame = f + 32;
-    }
-
     /* set on screen position */
     sprite_position(guest->sprite, guest->x, guest->y);
 }
@@ -1025,7 +1019,7 @@ int main()
 
     /* create the orville guest */
     struct Guest guest1;
-    guest_init(&guest1, 200, 113, 17);
+    guest_init(&guest1, 200, 113, 32);
 
     /* set initial scroll to 0 */
     int xscroll = 0;
