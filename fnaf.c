@@ -826,7 +826,7 @@ void afton_update(struct Afton *afton, int xscroll)
 
     /* if it's block tile
      * these numbers refer to the tile indices of the blocks afton can walk on */
-    if ((tile == 1) || (tile == 12))
+    if ((tile == 1) || (tile == 12) || (tile == 33))
     {
         /* stop the fall! */
         afton->falling = 0;
