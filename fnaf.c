@@ -931,7 +931,7 @@ void guest_init(struct Guest *guest, int x, int y, int f)
 }
 
 /* update guest */
-void guest_update(struct Guest *guest, int xscroll, int f)
+void guest_update(struct Guest *guest, int xscroll, int f, struct Afton *afton)
 {
 
     /* check which tile guest's feet are over */
@@ -957,6 +957,9 @@ void guest_update(struct Guest *guest, int xscroll, int f)
         /* he is falling now */
         guest->falling = 1;
     }
+    
+
+
 
     /* set on screen position */
     sprite_position(guest->sprite, guest->x, guest->y);
@@ -1019,7 +1022,7 @@ int main()
 
     /* create the orville guest */
     struct Guest guest1;
-    guest_init(&guest1, 200, 113, 32);
+    guest_init(&guest1, 200, 113, 64);
 
     /* set initial scroll to 0 */
     int xscroll = 0;
@@ -1031,7 +1034,7 @@ int main()
         /* update sprites */
         afton_update(&afton, xscroll);
 
-        guest_update(&guest1, xscroll, 32);
+        guest_update(&guest1, xscroll, 32, &afton);
 
         /* now the arrow keys move afton */
         if (button_pressed(BUTTON_RIGHT))
