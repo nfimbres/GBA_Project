@@ -14,7 +14,7 @@
 #include "background.h"
 
 /* include the sprites image we are using */
-#include "sprites.h"
+#include "all_sprites.h"
 
 /* include the music */
 #include "music.h"
@@ -62,7 +62,7 @@ volatile unsigned short* sprite_image_memory = (volatile unsigned short*) 0x6010
 
 /* the address of the color palettes used for backgrounds and sprites */
 volatile unsigned short* bg_palette = (volatile unsigned short*) 0x5000000;
-volatile unsigned short* sprites_palette = (volatile unsigned short*) 0x5000200;
+volatile unsigned short* sprite_palette = (volatile unsigned short*) 0x5000200;
 
 /* the button register holds the bits which indicate whether each button has
  * been pressed - this has got to be volatile as well
@@ -567,10 +567,10 @@ void sprite_set_offset(struct Sprite* sprite, int offset) {
 /* setup the sprite image and palette */
 void setup_sprite_image() {
     /* load the palette from the image into palette memory*/
-    memcpy16_dma((unsigned short*) sprites_palette, (unsigned short*) sprites_palette, PALETTE_SIZE);
+    memcpy16_dma((unsigned short*) sprite_palette, (unsigned short*) all_sprites_palette, PALETTE_SIZE);
 
     /* load the image into sprite image memory */
-    memcpy16_dma((unsigned short*) sprite_image_memory, (unsigned short*) sprites_data, (sprites_width * sprites_height) / 2);
+    memcpy16_dma((unsigned short*) sprite_image_memory, (unsigned short*) all_sprites_data, (all_sprites_width * all_sprites_height) / 2);
 }
 
                                                             /* AFTON SPRITE */
