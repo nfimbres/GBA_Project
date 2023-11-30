@@ -933,9 +933,6 @@ void guest_init(struct Guest *guest, int x, int y, int f)
 /* update guest */
 void guest_update(struct Guest *guest, int xscroll, int f, struct Afton *afton)
 {
-    /* update the guests position so it moves with the screen */
-    guest->x += xscroll;
-
     /* check which tile guest's feet are over */
     unsigned short tile = tile_lookup(guest->x + 8, guest->y + 32, xscroll, 0, map2,
                                       map2_width, map2_height);
@@ -968,6 +965,9 @@ void guest_update(struct Guest *guest, int xscroll, int f, struct Afton *afton)
     }
     if(guest->ani) {
         guest->frame += 16;
+        delay(500);
+        afton->x = 100;
+        guest->x = 200;
     }
 
 
@@ -1031,8 +1031,8 @@ int main()
     afton_init(&afton);
 
     /* create the orville guest */
-    struct Guest guest1;
-    guest_init(&guest1, 200, 113, 64);
+    struct Guest guest;
+    guest_init(&guest, 200, 113, 64);
 
     /* set initial scroll to 0 */
     int xscroll = 0;
@@ -1044,7 +1044,7 @@ int main()
         /* update sprites */
         afton_update(&afton, xscroll);
 
-        guest_update(&guest1, xscroll, 32, &afton);
+        guest_update(&guest, xscroll, 32, &afton);
 
         /* now the arrow keys move afton */
         if (button_pressed(BUTTON_RIGHT))
@@ -1052,6 +1052,7 @@ int main()
             if (afton_right(&afton))
             {
                 xscroll++;
+                guest.x++;
             }
         }
         else if (button_pressed(BUTTON_LEFT))
@@ -1059,6 +1060,7 @@ int main()
             if (afton_left(&afton))
             {
                 xscroll--;
+                guest.x--;
             }
         }
         else
