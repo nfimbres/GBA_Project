@@ -21,6 +21,7 @@
 
 /* include the tile map we are using */
 #include "map.h"
+#include "map2.h"
 
 /* the tile mode flags needed for display control register */
 #define MODE0 0x00
@@ -33,6 +34,7 @@
 
 /* the control registers for the four tile layers */
 volatile unsigned short* bg0_control = (volatile unsigned short*) 0x4000008;
+volatile unsigned short* bg1_control = (volatile unsigned short*) 0x400000a;
 
 /* palette is always 256 colors */
 #define PALETTE_SIZE 256
@@ -346,16 +348,27 @@ void setup_background() {
             (background_width * background_height) / 2);
 
     /* set all control the bits in this register */
-    *bg0_control = 0 |    /* priority, 0 is highest, 3 is lowest */
-        (0 << 2)  |       /* the char block the image data is stored in */
+    *bg0_control = 1 |    /* priority, 0 is highest, 3 is lowest */
+	(0 << 2)  |       /* the char block the image data is stored in */
         (0 << 6)  |       /* the mosaic flag */
         (1 << 7)  |       /* color mode, 0 is 16 colors, 1 is 256 colors */
         (16 << 8) |       /* the screen block the tile data is stored in */
         (1 << 13) |       /* wrapping flag */
         (0 << 14);        /* bg size, 0 is 256x256 */
 
+    /* set all control the bits in this register */
+    *bg1_control = 0 |    /* priority, 0 is highest, 3 is lowest */
+        (0 << 2)  |       /* the char block the image data is stored in */
+        (0 << 6)  |       /* the mosaic flag */
+        (1 << 7)  |       /* color mode, 0 is 16 colors, 1 is 256 colors */
+        (17 << 8) |       /* the screen block the tile data is stored in */
+        (1 << 13) |       /* wrapping flag */
+        (0 << 14);        /* bg size, 0 is 256x256 */
+
     /* load the tile data into screen block 16 */
     memcpy16_dma((unsigned short*) screen_block(16), (unsigned short*) map, map_width * map_height);
+    /* load the tile data into screen block 17 */
+    memcpy16_dma((unsigned short*) screen_block(17), (unsigned short*) map2, map2_width * map2_height);
 }
 
 /* just kill time */
@@ -917,6 +930,7 @@ int main() {
         /* wait for vblank before scrolling and moving sprites */
         wait_vblank();
         *bg0_x_scroll = xscroll;
+        *bg1_x_scroll = xscroll * 2;
         sprite_update_all();
 
         /* delay some */
