@@ -826,7 +826,7 @@ void afton_update(struct Afton *afton, int xscroll)
 
     /* if it's block tile
      * these numbers refer to the tile indices of the blocks afton can walk on */
-    if ((tile == 1) || (tile == 12) || (tile == 33))
+    if ((tile == 1) || (tile == 12))
     {
         /* stop the fall! */
         afton->falling = 0;
@@ -933,6 +933,8 @@ void guest_init(struct Guest *guest, int x, int y, int f)
 /* update guest */
 void guest_update(struct Guest *guest, int xscroll, int f, struct Afton *afton)
 {
+    /* update the guests position so it moves with the screen */
+    guest->x += xscroll;
 
     /* check which tile guest's feet are over */
     unsigned short tile = tile_lookup(guest->x + 8, guest->y + 32, xscroll, 0, map2,
@@ -958,11 +960,14 @@ void guest_update(struct Guest *guest, int xscroll, int f, struct Afton *afton)
         guest->falling = 1;
     }
     
-
-
+    if((afton->x + 8 >= guest->x) && (afton->x <= guest->x + 8)) {
+        guest->ani = true;
+        guest->frame += 16;
+        delay(500);
+    }
 
     /* set on screen position */
-    sprite_position(guest->sprite, guest->x + xscroll, guest->y);
+    sprite_position(guest->sprite, guest->x, guest->y);
 }
 
 /* AFTON SPRITE */
@@ -1022,7 +1027,7 @@ int main()
 
     /* create the orville guest */
     struct Guest guest1;
-    guest_init(&guest1, 400, 113, 64);
+    guest_init(&guest1, 200, 113, 64);
 
     /* set initial scroll to 0 */
     int xscroll = 0;
