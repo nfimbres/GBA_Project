@@ -350,7 +350,7 @@ void setup_background() {
             (background_width * background_height) / 2);
 
     /* set all control the bits in this register */
-    *bg0_control = 1 |    /* priority, 0 is highest, 3 is lowest */
+    *bg0_control = 0 |    /* priority, 0 is highest, 3 is lowest */
 	(0 << 2)  |       /* the char block the image data is stored in */
         (0 << 6)  |       /* the mosaic flag */
         (1 << 7)  |       /* color mode, 0 is 16 colors, 1 is 256 colors */
@@ -359,7 +359,7 @@ void setup_background() {
         (0 << 14);        /* bg size, 0 is 256x256 */
 
     /* set all control the bits in this register */
-    *bg1_control = 0 |    /* priority, 0 is highest, 3 is lowest */
+    *bg1_control = 1 |    /* priority, 0 is highest, 3 is lowest */
         (0 << 2)  |       /* the char block the image data is stored in */
         (0 << 6)  |       /* the mosaic flag */
         (1 << 7)  |       /* color mode, 0 is 16 colors, 1 is 256 colors */
