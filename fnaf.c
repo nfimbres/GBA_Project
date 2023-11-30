@@ -567,7 +567,7 @@ void sprite_set_offset(struct Sprite* sprite, int offset) {
 /* setup the sprite image and palette */
 void setup_sprite_image() {
     /* load the palette from the image into palette memory*/
-    memcpy16_dma((unsigned short*) sprites_palette, (unsigned short*)sprites_palette, PALETTE_SIZE);
+    memcpy16_dma((unsigned short*) sprites_palette, (unsigned short*) sprites_palette, PALETTE_SIZE);
 
     /* load the image into sprite image memory */
     memcpy16_dma((unsigned short*) sprite_image_memory, (unsigned short*) sprites_data, (sprites_width * sprites_height) / 2);
