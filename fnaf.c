@@ -821,8 +821,8 @@ void afton_update(struct Afton *afton, int xscroll)
     }
 
     /* check which tile afton's feet are over */
-    unsigned short tile = tile_lookup(afton->x + 8, afton->y + 32, xscroll, 0, map,
-                                      map_width, map_height);
+    unsigned short tile = tile_lookup(afton->x + 8, afton->y + 32, xscroll, 0, map2,
+                                      map2_width, map2_height);
 
     /* if it's block tile
      * these numbers refer to the tile indices of the blocks afton can walk on */
@@ -935,8 +935,8 @@ void guest_update(struct Guest *guest, int xscroll, int f)
 {
 
     /* check which tile guest's feet are over */
-    unsigned short tile = tile_lookup(guest->x + 8, guest->y + 32, xscroll, 0, map,
-                                      map_width, map_height);
+    unsigned short tile = tile_lookup(guest->x + 8, guest->y + 32, xscroll, 0, map2,
+                                      map2_width, map2_height);
 
     /* if it's block tile
      * these numbers refer to the tile indices of the blocks guest can walk on */
@@ -961,7 +961,7 @@ void guest_update(struct Guest *guest, int xscroll, int f)
     /* update animation guest has become an animatronic */
     if (guest->ani)
     {
-        guest->frame = f + 16;
+        guest->frame = f + 32;
     }
 
     /* set on screen position */
@@ -1037,7 +1037,7 @@ int main()
         /* update sprites */
         afton_update(&afton, xscroll);
 
-        guest_update(&guest1, xscroll, 17);
+        guest_update(&guest1, xscroll, 32);
 
         /* now the arrow keys move afton */
         if (button_pressed(BUTTON_RIGHT))
