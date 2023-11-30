@@ -962,7 +962,7 @@ void guest_update(struct Guest *guest, int xscroll, int f, struct Afton *afton)
 
 
     /* set on screen position */
-    sprite_position(guest->sprite, guest->x, guest->y);
+    sprite_position(guest->sprite, guest->x + xscroll, guest->y);
 }
 
 /* AFTON SPRITE */
@@ -1022,7 +1022,7 @@ int main()
 
     /* create the orville guest */
     struct Guest guest1;
-    guest_init(&guest1, 200, 113, 64);
+    guest_init(&guest1, 400, 113, 64);
 
     /* set initial scroll to 0 */
     int xscroll = 0;
