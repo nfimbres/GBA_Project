@@ -1049,16 +1049,20 @@ int main()
         {
             if (afton_right(&afton))
             {
-                xscroll++;
-                guest.x++;
+                if (xscroll < 480) {
+                    xscroll++;
+                    guest.x--;
+                }
             }
         }
         else if (button_pressed(BUTTON_LEFT))
         {
             if (afton_left(&afton))
             {
-                xscroll--;
-                guest.x--;
+                if (xscroll > 0) {
+                    xscroll--;
+                    guest.x++;
+                }
             }
         }
         else
