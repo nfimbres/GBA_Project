@@ -1122,9 +1122,13 @@ int main()
         }
         else
         {
+            sprite_clear();
+            wait_vblank();
+            *bg0_x_scroll = xscroll;
+            *bg1_x_scroll = times_two(xscroll);
+            sprite_update_all();
             while (1)
             {
-                /* end title*/
             }
         }
     }
