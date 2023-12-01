@@ -957,7 +957,7 @@ void guest_update(struct Guest *guest, int xscroll, struct Afton *afton)
         guest->falling = 1;
     }
 
-    if (afton->x + 8 >= 150)
+    if (afton->x + 8 >= 300)
     {
         guest->ani = 1;
     }
@@ -965,7 +965,7 @@ void guest_update(struct Guest *guest, int xscroll, struct Afton *afton)
     if (guest->ani)
     {
         guest->frame += 16;
-        delay(1000);
+        delay(10000);
         guest->frame += 16;
         afton->x = 16;
         guest->x = 300;
