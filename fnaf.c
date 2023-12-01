@@ -931,10 +931,10 @@ void guest_init(struct Guest *guest, int x, int y, int f)
 }
 
 /* update guest */
-void guest_update(struct Guest *guest, int xscroll, struct Afton *afton)
+void guest_update(struct Guest *guest, int *xscroll, struct Afton *afton)
 {
     /* check which tile guest's feet are over */
-    unsigned short tile = tile_lookup(guest->x + 8, guest->y + 32, xscroll, 0, map2,
+    unsigned short tile = tile_lookup(guest->x + 8, guest->y + 32, *xscroll, 0, map2,
                                       map2_width, map2_height);
 
     /* if it's block tile
@@ -971,6 +971,8 @@ void guest_update(struct Guest *guest, int xscroll, struct Afton *afton)
         afton->sprite = sprite_init(afton->x, afton->y, SIZE_16_32, 0, 0, afton->frame, 0);
 
         guest->sprite = sprite_init(guest->x, guest->y, SIZE_16_32, 0, 0, guest->frame, 0);
+        
+        guest->ani = 0;
     }
 
     if (afton->x + 8 > guest->x)
@@ -988,7 +990,8 @@ void guest_update(struct Guest *guest, int xscroll, struct Afton *afton)
 
         guest->sprite = sprite_init(456, guest->y, SIZE_16_32, 0, 0, guest->frame, 0);
 
-        guest->ani = 0;
+
+        *xscroll = 0;
     }
 
     /* set on screen position */
