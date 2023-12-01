@@ -957,7 +957,7 @@ void guest_update(struct Guest *guest, int xscroll, struct Afton *afton)
         guest->falling = 1;
     }
 
-    if (afton->x + 8 >= guest->x - 1)
+    if (afton->x + 8 >= guest->x)
     {
         guest->ani = 1;
     }
@@ -965,12 +965,16 @@ void guest_update(struct Guest *guest, int xscroll, struct Afton *afton)
     if (guest->ani)
     {
         guest->frame += 16;
+        
+        guest->sprite = sprite_init(guest->x, guest->y, SIZE_16_32, 0, 0, guest->frame, 0);
     }
-    if(afton->x + 8 >= guest->x)
+    if(afton->x + 8 >= guest->x + 2)
     {
         delay(1000);
         afton->x = 16;
         guest->frame += 16;
+        guest->sprite = sprite_init(guest->x, guest->y, SIZE_16_32, 0, 0, guest->frame, 0);
+        guest->ani = 0;
     }
 
     /* set on screen position */
