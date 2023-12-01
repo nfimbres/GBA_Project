@@ -2,7 +2,7 @@
 
 /* checks if r0 is greater than r1 */
 
-.global	next_frame
+.global	greater_than
 next_frame:
     cmp r0, r1
     bgt .true
