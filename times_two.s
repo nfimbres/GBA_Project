@@ -4,7 +4,7 @@
 
 .global	times_two
 times_two:
-    lsl r0, r1, #1
+    mov r0, r1, lsl #1
 .end:
     mov pc, lr
     
