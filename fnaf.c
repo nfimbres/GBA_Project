@@ -971,7 +971,7 @@ void guest_update(struct Guest *guest, int *xscroll, struct Afton *afton)
         afton->sprite = sprite_init(afton->x, afton->y, SIZE_16_32, 0, 0, afton->frame, 0);
 
         guest->sprite = sprite_init(guest->x, guest->y, SIZE_16_32, 0, 0, guest->frame, 0);
-        
+
         guest->ani = 0;
     }
 
@@ -1067,7 +1067,7 @@ int main()
         /* update sprites */
         afton_update(&afton, xscroll);
 
-        guest_update(&guest, xscroll, &afton);
+        guest_update(&guest, &xscroll, &afton);
 
         /* now the arrow keys move afton */
         if (button_pressed(BUTTON_RIGHT))
