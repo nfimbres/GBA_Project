@@ -923,7 +923,7 @@ void guest_init(struct Guest *guest, int x, int y, int f)
     guest->gravity = 50;
     guest->border = 40;
     guest->frame = f;
-    guest->ani = 0;
+    guest-> = 0;
     guest->counter = 0;
     guest->falling = 0;
     guest->animation_delay = 8;
@@ -931,7 +931,7 @@ void guest_init(struct Guest *guest, int x, int y, int f)
 }
 
 /* update guest */
-void guest_update(struct Guest *guest, int xscroll, int f, struct Afton *afton)
+void guest_update(struct Guest *guest, int xscroll, struct Afton *afton)
 {
     /* check which tile guest's feet are over */
     unsigned short tile = tile_lookup(guest->x + 8, guest->y + 32, xscroll, 0, map2,
@@ -965,8 +965,11 @@ void guest_update(struct Guest *guest, int xscroll, int f, struct Afton *afton)
     if (guest->ani)
     {
         guest->frame += 16;
+        delay(1000);
+        guest->frame += 16;
         afton->x = 16;
-        guest->x = 150;
+        guest->x = 300;
+
     }
 
     /* set on screen position */
@@ -1030,7 +1033,7 @@ int main()
 
     /* create the guest */
     struct Guest guest;
-    guest_init(&guest, 150, 113, 96);
+    guest_init(&guest, 300, 113, 32);
 
     /* set initial scroll to 0 */
     int xscroll = 0;
@@ -1042,7 +1045,7 @@ int main()
         /* update sprites */
         afton_update(&afton, xscroll);
 
-        guest_update(&guest, xscroll, 32, &afton);
+        guest_update(&guest, xscroll, &afton);
 
         /* now the arrow keys move afton */
         if (button_pressed(BUTTON_RIGHT))
