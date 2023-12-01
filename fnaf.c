@@ -96,6 +96,12 @@ volatile short *bg3_y_scroll = (unsigned short *)0x400001e;
  * much of the screen has been drawn */
 volatile unsigned short *scanline_counter = (volatile unsigned short *)0x4000006;
 
+/* returns the next frame int */
+int next_frame(int frame);
+
+/* returns true when a is greater than b */
+int greater_than(int a, int b);
+
 /* wait for the screen to be fully drawn so we can do something during vblank */
 void wait_vblank()
 {
@@ -850,8 +856,8 @@ void afton_update(struct Afton *afton, int xscroll)
         afton->counter++;
         if (afton->counter >= afton->animation_delay)
         {
-            afton->frame = afton->frame + 16;
-            if (afton->frame > 16)
+            afton->frame = next_frame(afton->frame);
+            if (greater_than(afton->frame, 16))
             {
                 afton->frame = 0;
             }
@@ -1083,7 +1089,7 @@ int main()
             /* delay some */
             delay(300);
         }
-        guest.frame += 16;
+        guest.frame = next_frame(guest.frame);
         sprite_set_offset(guest.sprite, guest.frame);
 
         /* wait for vblank before scrolling and moving sprites */
@@ -1094,7 +1100,7 @@ int main()
 
         xscroll = 0;
 
-        guest.frame += 16;
+        guest.frame = next_frame(guest.frame);
         sprite_set_offset(guest.sprite, guest.frame);
         afton.x = 16;
         guest.x = 456;
@@ -1110,6 +1116,15 @@ int main()
         *bg1_x_scroll = xscroll * 2;
         sprite_update_all();
 
-        guest.ani = 0;
+        if (guest.frame < 150)
+        {
+            guest.ani = 0;
+        }
+        else
+        {
+            while(1) {
+                /* end title*/
+            }
+        }
     }
 }
