@@ -1107,7 +1107,7 @@ int main()
         sprite_position(afton.sprite, afton.x, afton.y);
         sprite_position(guest.sprite, guest.x, guest.y);
 
-        delay(10000);
+        delay(100000);
 
         /* wait for vblank before scrolling and moving sprites */
         wait_vblank();
