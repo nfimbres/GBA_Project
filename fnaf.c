@@ -969,7 +969,7 @@ void guest_update(struct Guest *guest, int xscroll, struct Afton *afton)
         guest->frame += 16;
         afton->x = 16;
         guest->x = 300;
-
+        guest->ani = 0;
     }
 
     /* set on screen position */
