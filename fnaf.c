@@ -957,7 +957,7 @@ void guest_update(struct Guest *guest, int xscroll, struct Afton *afton)
         guest->falling = 1;
     }
 
-    if (afton->x + 8 >= 300)
+    if (afton->x + 8 >= guest->x)
     {
         guest->ani = 1;
     }
