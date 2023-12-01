@@ -976,7 +976,7 @@ void guest_update(struct Guest *guest, int xscroll, struct Afton *afton)
     if (afton->x + 8 > guest->x)
     {
 
-        delay(1000);
+        delay(10000);
 
         sprite_clear();
 
@@ -984,7 +984,9 @@ void guest_update(struct Guest *guest, int xscroll, struct Afton *afton)
 
         guest->frame += 16;
 
-        guest->sprite = sprite_init(300, guest->y, SIZE_16_32, 0, 0, guest->frame, 0);
+        afton->sprite = sprite_init(16, afton->y, SIZE_16_32, 0, 0, 0, 0);
+
+        guest->sprite = sprite_init(456, guest->y, SIZE_16_32, 0, 0, guest->frame, 0);
 
         guest->ani = 0;
     }
@@ -1050,7 +1052,7 @@ int main()
 
     /* create the guest */
     struct Guest guest;
-    guest_init(&guest, 300, 113, 32);
+    guest_init(&guest, 456, 113, 32);
 
     /* set initial scroll to 0 */
     int xscroll = 0;
