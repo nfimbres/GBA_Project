@@ -957,7 +957,7 @@ void guest_update(struct Guest *guest, int *xscroll, struct Afton *afton)
         guest->falling = 1;
     }
 
-    if (afton->x + 8 == guest->x)
+    if (afton->x + 8 >= guest->x)
     {
         guest->ani = 1;
     }
@@ -1031,7 +1031,7 @@ int main()
     /* loop forever */
     while (1)
     {
-        /* level 1 */
+        /* level repeat */
         while (!guest.ani)
         {
 
@@ -1083,8 +1083,15 @@ int main()
             /* delay some */
             delay(300);
         }
-        afton.x = 120;
         guest.frame += +16;
+
+        sprite_clear();
+
+        afton.sprite = sprite_init(120, afton.y, SIZE_16_32, 0, 0, 0, 0);
+
+        guest.sprite = sprite_init(456, guest.y, SIZE_16_32, 0, 0, guest.frame, 0);
+
+        sprite_position(afton.sprite, afton.x, afton.y);
 
         /* wait for vblank before scrolling and moving sprites */
         wait_vblank();
@@ -1092,8 +1099,17 @@ int main()
         *bg1_x_scroll = xscroll * 2;
         sprite_update_all();
 
-        afton.x = 16;
         xscroll = 0;
+        
+        guest.frame += +16;
+
+        sprite_clear();
+
+        afton.sprite = sprite_init(16, afton.y, SIZE_16_32, 0, 0, 0, 0);
+
+        guest.sprite = sprite_init(456, guest.y, SIZE_16_32, 0, 0, guest.frame, 0);
+
+        sprite_position(afton.sprite, afton.x, afton.y);
 
         /* wait for vblank before scrolling and moving sprites */
         wait_vblank();
