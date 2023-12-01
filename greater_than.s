@@ -3,7 +3,7 @@
 /* checks if r0 is greater than r1 */
 
 .global	greater_than
-next_frame:
+greater_than:
     cmp r0, r1
     bgt .true
     mov r0, #0
