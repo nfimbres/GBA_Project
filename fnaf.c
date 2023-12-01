@@ -97,7 +97,7 @@ volatile short *bg3_y_scroll = (unsigned short *)0x400001e;
 volatile unsigned short *scanline_counter = (volatile unsigned short *)0x4000006;
 
 /* returns the next frame int */
-int next_frame(int frame);
+int next_frame(int frame, int num);
 
 /* returns true when a is greater than b */
 int times_two(int num);
@@ -856,7 +856,7 @@ void afton_update(struct Afton *afton, int xscroll)
         afton->counter++;
         if (afton->counter >= afton->animation_delay)
         {
-            afton->frame = next_frame(afton->frame);
+            afton->frame = next_frame(afton->frame, 16);
             if (afton->frame > 16)
             {
                 afton->frame = 0;
@@ -1089,7 +1089,7 @@ int main()
             /* delay some */
             delay(300);
         }
-        guest.frame = next_frame(guest.frame);
+        guest.frame = next_frame(guest.frame, 16);
         sprite_set_offset(guest.sprite, guest.frame);
 
         /* wait for vblank before scrolling and moving sprites */
@@ -1100,7 +1100,7 @@ int main()
 
         xscroll = 0;
 
-        guest.frame = next_frame(guest.frame);
+        guest.frame = next_frame(guest.frame, 16);
         sprite_set_offset(guest.sprite, guest.frame);
         afton.x = 16;
         guest.x = 456;
