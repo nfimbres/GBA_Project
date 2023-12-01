@@ -1085,11 +1085,6 @@ int main()
         }
         guest.frame += 16;
         sprite_set_offset(guest.sprite, guest.frame);
-        afton.x = 120;
-        guest.x = 216;
-
-        sprite_position(afton.sprite, afton.x, afton.y);
-        sprite_position(guest.sprite, guest.x, guest.y);
 
         /* wait for vblank before scrolling and moving sprites */
         wait_vblank();
