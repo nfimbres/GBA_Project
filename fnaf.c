@@ -956,20 +956,18 @@ void guest_update(struct Guest *guest, int xscroll, int f, struct Afton *afton)
         /* he is falling now */
         guest->falling = 1;
     }
-    
-    if((afton->x + 8 >= guest->x) && (afton->x <= guest->x)) {
+
+    if (afton->x + 8 >= 150)
+    {
         guest->ani = 0;
-    }
-    if((afton->x + 8 >= guest->x + 8) && (afton->x <= guest->x + 8)) {
-        guest->ani = 0;
-    }
-    if(guest->ani) {
-        guest->frame += 16;
-        delay(500);
-        afton->x = 100;
-        guest->x = 200;
     }
 
+    if (guest->ani)
+    {
+        guest->frame += 16;
+        afton->x = 100;
+        guest->x = 150;
+    }
 
     /* set on screen position */
     sprite_position(guest->sprite, guest->x, guest->y);
@@ -1030,9 +1028,9 @@ int main()
     struct Afton afton;
     afton_init(&afton);
 
-    /* create the orville guest */
+    /* create the guest */
     struct Guest guest;
-    guest_init(&guest, 200, 113, 64);
+    guest_init(&guest, 150, 113, 96);
 
     /* set initial scroll to 0 */
     int xscroll = 0;
@@ -1049,7 +1047,7 @@ int main()
         /* now the arrow keys move afton */
         if (button_pressed(BUTTON_RIGHT))
         {
-            if (afton_right(&afton))
+            if ((afton_right(&afton)) && afton.x < 600)
             {
                 xscroll++;
                 guest.x++;
@@ -1057,7 +1055,7 @@ int main()
         }
         else if (button_pressed(BUTTON_LEFT))
         {
-            if (afton_left(&afton))
+            if ((afton_left(&afton)) && afton.x > 100)
             {
                 xscroll--;
                 guest.x--;
