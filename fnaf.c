@@ -923,7 +923,7 @@ void guest_init(struct Guest *guest, int x, int y, int f)
     guest->gravity = 50;
     guest->border = 40;
     guest->frame = f;
-    guest-> = 0;
+    guest->ani = 0;
     guest->counter = 0;
     guest->falling = 0;
     guest->animation_delay = 8;
