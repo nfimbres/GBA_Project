@@ -973,7 +973,7 @@ void guest_update(struct Guest *guest, int xscroll, struct Afton *afton)
         guest->sprite = sprite_init(guest->x, guest->y, SIZE_16_32, 0, 0, guest->frame, 0);
     }
 
-    if (guest->x + 8 > guest->x)
+    if (afton->x + 8 > guest->x)
     {
 
         delay(1000);
@@ -1003,7 +1003,7 @@ int afton_left(struct Afton *afton)
     afton->move = 1;
 
     /* if we are at the left end, just scroll the screen */
-    if (afton->x < afton->border - 24)
+    if (afton->x < afton->border)
     {
         return 1;
     }
