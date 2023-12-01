@@ -100,7 +100,7 @@ volatile unsigned short *scanline_counter = (volatile unsigned short *)0x4000006
 int next_frame(int frame);
 
 /* returns true when a is greater than b */
-int greater_than(int a, int b);
+int times_two(int num);
 
 /* wait for the screen to be fully drawn so we can do something during vblank */
 void wait_vblank()
@@ -857,7 +857,7 @@ void afton_update(struct Afton *afton, int xscroll)
         if (afton->counter >= afton->animation_delay)
         {
             afton->frame = next_frame(afton->frame);
-            if (greater_than(afton->frame, 16))
+            if (afton->frame > 16)
             {
                 afton->frame = 0;
             }
@@ -1083,7 +1083,7 @@ int main()
             /* wait for vblank before scrolling and moving sprites */
             wait_vblank();
             *bg0_x_scroll = xscroll;
-            *bg1_x_scroll = xscroll * 2;
+            *bg1_x_scroll = times_two(xscroll);
             sprite_update_all();
 
             /* delay some */
@@ -1095,7 +1095,7 @@ int main()
         /* wait for vblank before scrolling and moving sprites */
         wait_vblank();
         *bg0_x_scroll = xscroll;
-        *bg1_x_scroll = xscroll * 2;
+        *bg1_x_scroll = times_two(xscroll);
         sprite_update_all();
 
         xscroll = 0;
@@ -1113,7 +1113,7 @@ int main()
         /* wait for vblank before scrolling and moving sprites */
         wait_vblank();
         *bg0_x_scroll = xscroll;
-        *bg1_x_scroll = xscroll * 2;
+        *bg1_x_scroll = times_two(xscroll);
         sprite_update_all();
 
         if (guest.frame < 150)
@@ -1122,7 +1122,8 @@ int main()
         }
         else
         {
-            while(1) {
+            while (1)
+            {
                 /* end title*/
             }
         }
