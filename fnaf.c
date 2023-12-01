@@ -1085,13 +1085,8 @@ int main()
         }
         guest.frame += +16;
 
-        sprite_clear();
-
-        afton.sprite = sprite_init(120, afton.y, SIZE_16_32, 0, 0, 0, 0);
-
-        guest.sprite = sprite_init(456, guest.y, SIZE_16_32, 0, 0, guest.frame, 0);
-
-        sprite_position(afton.sprite, afton.x, afton.y);
+        sprite_position(afton.sprite, 120, afton.y);
+        sprite_position(guest.sprite, 216, guest.y);
 
         /* wait for vblank before scrolling and moving sprites */
         wait_vblank();
@@ -1103,13 +1098,8 @@ int main()
 
         guest.frame += +16;
 
-        sprite_clear();
-
-        afton.sprite = sprite_init(16, afton.y, SIZE_16_32, 0, 0, 0, 0);
-
-        guest.sprite = sprite_init(456, guest.y, SIZE_16_32, 0, 0, guest.frame, 0);
-
-        sprite_position(afton.sprite, afton.x, afton.y);
+        sprite_position(afton.sprite, 16, afton.y);
+        sprite_position(guest.sprite, 456, guest.y);
 
         delay(10000);
 
