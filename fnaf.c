@@ -905,7 +905,7 @@ void afton_init(struct Afton *afton)
     afton->y = 113;
     afton->yvel = 0;
     afton->gravity = 50;
-    afton->border = 20;
+    afton->border = 40;
     afton->frame = 0;
     afton->move = 0;
     afton->counter = 0;
@@ -957,23 +957,35 @@ void guest_update(struct Guest *guest, int xscroll, struct Afton *afton)
         guest->falling = 1;
     }
 
-    if (afton->x + 8 >= guest->x)
+    if (afton->x + 8 == guest->x)
     {
         guest->ani = 1;
     }
 
     if (guest->ani)
     {
+        sprite_clear();
+
         guest->frame += 16;
-        
+
+        afton->sprite = sprite_init(afton->x, afton->y, SIZE_16_32, 0, 0, afton->frame, 0);
+
         guest->sprite = sprite_init(guest->x, guest->y, SIZE_16_32, 0, 0, guest->frame, 0);
     }
-    if(afton->x + 8 >= guest->x + 2)
+
+    if (guest->x + 8 > guest->x)
     {
+
         delay(1000);
+
+        sprite_clear();
+
         afton->x = 16;
+
         guest->frame += 16;
-        guest->sprite = sprite_init(guest->x, guest->y, SIZE_16_32, 0, 0, guest->frame, 0);
+
+        guest->sprite = sprite_init(300, guest->y, SIZE_16_32, 0, 0, guest->frame, 0);
+
         guest->ani = 0;
     }
 
@@ -991,7 +1003,7 @@ int afton_left(struct Afton *afton)
     afton->move = 1;
 
     /* if we are at the left end, just scroll the screen */
-    if (afton->x < afton->border)
+    if (afton->x < afton->border - 24)
     {
         return 1;
     }
@@ -1057,7 +1069,8 @@ int main()
         {
             if (afton_right(&afton))
             {
-                if (xscroll < 480) {
+                if (xscroll < 480)
+                {
                     xscroll++;
                     guest.x--;
                 }
@@ -1067,7 +1080,8 @@ int main()
         {
             if (afton_left(&afton))
             {
-                if (xscroll > 0) {
+                if (xscroll > 0)
+                {
                     xscroll--;
                     guest.x++;
                 }
