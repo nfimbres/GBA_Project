@@ -962,38 +962,6 @@ void guest_update(struct Guest *guest, int *xscroll, struct Afton *afton)
         guest->ani = 1;
     }
 
-    if (guest->ani)
-    {
-        sprite_clear();
-
-        guest->frame += 16;
-
-        afton->sprite = sprite_init(afton->x, afton->y, SIZE_16_32, 0, 0, afton->frame, 0);
-
-        guest->sprite = sprite_init(guest->x, guest->y, SIZE_16_32, 0, 0, guest->frame, 0);
-
-        guest->ani = 0;
-    }
-
-    if (afton->x + 8 > guest->x)
-    {
-
-        delay(10000);
-
-        sprite_clear();
-
-        afton->x = 16;
-
-        guest->frame += 16;
-
-        afton->sprite = sprite_init(16, afton->y, SIZE_16_32, 0, 0, 0, 0);
-
-        guest->sprite = sprite_init(456, guest->y, SIZE_16_32, 0, 0, guest->frame, 0);
-
-
-        *xscroll = 0;
-    }
-
     /* set on screen position */
     sprite_position(guest->sprite, guest->x, guest->y);
 }
@@ -1063,45 +1031,60 @@ int main()
     /* loop forever */
     while (1)
     {
-
-        /* update sprites */
-        afton_update(&afton, xscroll);
-
-        guest_update(&guest, &xscroll, &afton);
-
-        /* now the arrow keys move afton */
-        if (button_pressed(BUTTON_RIGHT))
+        /* level 1 */
+        while (!guest.ani)
         {
-            if (afton_right(&afton))
+
+            /* update sprites */
+            afton_update(&afton, xscroll);
+
+            guest_update(&guest, &xscroll, &afton);
+
+            /* now the arrow keys move afton */
+            if (button_pressed(BUTTON_RIGHT))
             {
-                if (xscroll < 480)
+                if (afton_right(&afton))
                 {
-                    xscroll++;
-                    guest.x--;
+                    if (xscroll < 480)
+                    {
+                        xscroll++;
+                        guest.x--;
+                    }
                 }
             }
-        }
-        else if (button_pressed(BUTTON_LEFT))
-        {
-            if (afton_left(&afton))
+            else if (button_pressed(BUTTON_LEFT))
             {
-                if (xscroll > 0)
+                if (afton_left(&afton))
                 {
-                    xscroll--;
-                    guest.x++;
+                    if (xscroll > 0)
+                    {
+                        xscroll--;
+                        guest.x++;
+                    }
                 }
             }
-        }
-        else
-        {
-            afton_stop(&afton);
-        }
+            else
+            {
+                afton_stop(&afton);
+            }
 
-        /* check for jumping */
-        if (button_pressed(BUTTON_A))
-        {
-            afton_jump(&afton);
+            /* check for jumping */
+            if (button_pressed(BUTTON_A))
+            {
+                afton_jump(&afton);
+            }
+
+            /* wait for vblank before scrolling and moving sprites */
+            wait_vblank();
+            *bg0_x_scroll = xscroll;
+            *bg1_x_scroll = xscroll * 2;
+            sprite_update_all();
+
+            /* delay some */
+            delay(300);
         }
+        afton.x = 120;
+        guest.frame += +16;
 
         /* wait for vblank before scrolling and moving sprites */
         wait_vblank();
@@ -1109,7 +1092,13 @@ int main()
         *bg1_x_scroll = xscroll * 2;
         sprite_update_all();
 
-        /* delay some */
-        delay(300);
+        afton.x = 16;
+        xscroll = 0;
+
+        /* wait for vblank before scrolling and moving sprites */
+        wait_vblank();
+        *bg0_x_scroll = xscroll;
+        *bg1_x_scroll = xscroll * 2;
+        sprite_update_all();
     }
 }
