@@ -901,11 +901,11 @@ struct Guest
 /* initialize afton */
 void afton_init(struct Afton *afton)
 {
-    afton->x = 100;
+    afton->x = 16;
     afton->y = 113;
     afton->yvel = 0;
     afton->gravity = 50;
-    afton->border = 40;
+    afton->border = 20;
     afton->frame = 0;
     afton->move = 0;
     afton->counter = 0;
@@ -965,7 +965,7 @@ void guest_update(struct Guest *guest, int xscroll, int f, struct Afton *afton)
     if (guest->ani)
     {
         guest->frame += 16;
-        afton->x = 100;
+        afton->x = 16;
         guest->x = 150;
     }
 
@@ -1047,7 +1047,7 @@ int main()
         /* now the arrow keys move afton */
         if (button_pressed(BUTTON_RIGHT))
         {
-            if ((afton_right(&afton)) && afton.x < 600)
+            if (afton_right(&afton))
             {
                 xscroll++;
                 guest.x++;
@@ -1055,7 +1055,7 @@ int main()
         }
         else if (button_pressed(BUTTON_LEFT))
         {
-            if ((afton_left(&afton)) && afton.x > 100)
+            if (afton_left(&afton))
             {
                 xscroll--;
                 guest.x--;
