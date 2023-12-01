@@ -1100,7 +1100,7 @@ int main()
         sprite_update_all();
 
         xscroll = 0;
-        
+
         guest.frame += +16;
 
         sprite_clear();
@@ -1111,10 +1111,14 @@ int main()
 
         sprite_position(afton.sprite, afton.x, afton.y);
 
+        delay(10000);
+
         /* wait for vblank before scrolling and moving sprites */
         wait_vblank();
         *bg0_x_scroll = xscroll;
         *bg1_x_scroll = xscroll * 2;
         sprite_update_all();
+
+        guest.ani = 0;
     }
 }
